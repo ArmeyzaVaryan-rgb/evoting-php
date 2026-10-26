@@ -1,0 +1,7 @@
+# File konfigurasi rahasia (jangan di-upload)
+config.php
+
+# File sistem & editor
+.DS_Store
+.vscode/
+Thumbs.db
