@@ -3,7 +3,7 @@ require '../config.php';
 require_login('admin');
 
 if (isset($_GET['action']) && isset($_GET['id'])) {
-    $id = $_GET['id'];
+    $id = (int) $_GET['id'];   // dipaksa angka agar aman dari SQL injection
     $action = $_GET['action'];
     if ($action == 'toggle') {
         $pdo->query("UPDATE users SET is_active = NOT is_active WHERE id = $id");
@@ -18,74 +18,67 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 }
 
 $voters = $pdo->query("SELECT * FROM users WHERE role='voter' ORDER BY nim ASC")->fetchAll();
+$page_title = 'Kelola pemilih'; $page_sub = count($voters) . ' pemilih terdaftar.'; $active = 'voters.php';
+require '../includes/admin_top.php';
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Kelola Pemilih - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 flex h-screen overflow-hidden">
-    <aside class="w-64 bg-white border-r flex flex-col">
-        <div class="p-5 border-b text-xl font-bold text-indigo-600">🛡️ Admin Panel</div>
-        <nav class="flex-1 p-3 space-y-1 text-sm">
-            <a href="dashboard.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Overview</a>
-            <a href="voters.php" class="block px-3 py-2.5 rounded bg-indigo-50 text-indigo-700 font-semibold">Kelola Pemilih</a>
-            <a href="candidate.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Kandidat</a>
-            <a href="result_vote.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Hasil Voting</a>
-            <a href="audit_log.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Audit Log</a>
-        </nav>
-        <div class="p-4 border-t"><a href="logout.php" class="text-red-600 text-sm font-medium hover:underline">Logout</a></div>
-    </aside>
+<div class="mb-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-100">
+    <i data-lucide="search" class="h-4 w-4 text-slate-400"></i>
+    <input id="cari" type="search" placeholder="Cari NIM atau nama" class="w-full bg-transparent text-sm focus:outline-none">
+</div>
 
-    <main class="flex-1 p-8 overflow-y-auto">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800">Kelola Pemilih</h1>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <table class="w-full text-left text-sm">
-                <thead class="bg-gray-50 border-b border-gray-200 text-gray-600">
-                    <tr>
-                        <th class="p-4 font-semibold">NIM</th>
-                        <th class="p-4 font-semibold">Nama</th>
-                        <th class="p-4 font-semibold text-center">Status Aktif</th>
-                        <th class="p-4 font-semibold text-center">Status Memilih</th>
-                        <th class="p-4 font-semibold text-right">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    <?php foreach($voters as $v): ?>
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="p-4 font-mono font-medium text-gray-700"><?= $v['nim'] ?></td>
-                        <td class="p-4 font-medium text-gray-800"><?= $v['nama'] ?></td>
-                        <td class="p-4 text-center">
-                            <?php if($v['is_active']): ?>
-                                <span class="text-green-700 bg-green-100 px-2.5 py-1 rounded-full text-xs font-bold">Aktif</span>
-                            <?php else: ?>
-                                <span class="text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full text-xs font-bold">Belum</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="p-4 text-center">
-                            <?php if($v['has_voted']): ?>
-                                <span class="text-blue-700 bg-blue-100 px-2.5 py-1 rounded-full text-xs font-bold">✔ Sudah</span>
-                            <?php else: ?>
-                                <span class="text-amber-700 bg-amber-100 px-2.5 py-1 rounded-full text-xs font-bold">✖ Belum</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="p-4 text-right space-x-2">
-                            <a href="?action=toggle&id=<?= $v['id'] ?>" class="text-xs bg-gray-100 border border-gray-200 px-3 py-1.5 rounded hover:bg-gray-200 font-medium text-gray-700 transition">
-                                <?= $v['is_active'] ? 'Nonaktifkan' : 'Aktifkan' ?>
-                            </a>
-                            <?php if($v['has_voted']): ?>
-                            <a href="?action=reset&id=<?= $v['id'] ?>" onclick="return confirm('Yakin reset hak pilih <?= $v['nama'] ?>? Suara sebelumnya akan dihapus.')" class="text-xs bg-red-100 text-red-700 border border-red-200 px-3 py-1.5 rounded hover:bg-red-200 font-medium transition">
-                                Reset Suara
-                            </a>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </main>
-</body>
-</html>
+<div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+    <table class="w-full min-w-[680px] text-left text-sm">
+        <thead class="border-b border-slate-200 bg-slate-50 text-slate-500">
+            <tr>
+                <th class="p-4 font-semibold">NIM</th>
+                <th class="p-4 font-semibold">Nama</th>
+                <th class="p-4 text-center font-semibold">Akun</th>
+                <th class="p-4 text-center font-semibold">Suara</th>
+                <th class="p-4 text-right font-semibold">Aksi</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100" id="baris">
+            <?php foreach($voters as $v): ?>
+            <tr class="transition hover:bg-slate-50" data-s="<?= e(strtolower($v['nim'] . ' ' . $v['nama'])) ?>">
+                <td class="p-4 font-mono font-medium text-slate-600"><?= e($v['nim']) ?></td>
+                <td class="p-4 font-semibold text-ink"><?= e($v['nama']) ?></td>
+                <td class="p-4 text-center">
+                    <?php if($v['is_active']): ?>
+                        <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">Aktif</span>
+                    <?php else: ?>
+                        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-500">Nonaktif</span>
+                    <?php endif; ?>
+                </td>
+                <td class="p-4 text-center">
+                    <?php if($v['has_voted']): ?>
+                        <span class="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-700">Sudah memilih</span>
+                    <?php else: ?>
+                        <span class="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-700">Belum memilih</span>
+                    <?php endif; ?>
+                </td>
+                <td class="space-x-2 whitespace-nowrap p-4 text-right">
+                    <a href="?action=toggle&id=<?= (int)$v['id'] ?>" class="inline-block rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100">
+                        <?= $v['is_active'] ? 'Nonaktifkan' : 'Aktifkan' ?>
+                    </a>
+                    <?php if($v['has_voted']): ?>
+                    <a href="?action=reset&id=<?= (int)$v['id'] ?>" data-confirm="Reset hak pilih <?= e($v['nama']) ?>? Suara sebelumnya akan dihapus." class="inline-block rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100">
+                        Reset suara
+                    </a>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+            <tr id="kosong" hidden><td colspan="5" class="p-10 text-center text-slate-500">Tidak ada pemilih yang cocok dengan pencarian.</td></tr>
+        </tbody>
+    </table>
+</div>
+<script>
+document.getElementById('cari').addEventListener('input', function () {
+    var q = this.value.toLowerCase().trim(), n = 0;
+    document.querySelectorAll('#baris tr[data-s]').forEach(function (tr) {
+        var ok = tr.dataset.s.indexOf(q) > -1; tr.hidden = !ok; if (ok) n++;
+    });
+    document.getElementById('kosong').hidden = n > 0;
+});
+</script>
+<?php require '../includes/admin_bottom.php'; ?>

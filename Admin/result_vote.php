@@ -7,64 +7,37 @@ $sen_res = $pdo->query("SELECT c.nama, c.nomor_urut, COUNT(v.id) as total FROM c
 
 $total_kahim = array_sum(array_column($kahim_res, 'total')) ?: 1;
 $total_sen = array_sum(array_column($sen_res, 'total')) ?: 1;
-?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Hasil Voting - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 flex h-screen overflow-hidden">
-    <aside class="w-64 bg-white border-r flex flex-col">
-        <div class="p-5 border-b text-xl font-bold text-indigo-600">🛡️ Admin Panel</div>
-        <nav class="flex-1 p-3 space-y-1 text-sm">
-            <a href="dashboard.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Overview</a>
-            <a href="voters.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Kelola Pemilih</a>
-            <a href="candidate.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Kandidat</a>
-            <a href="result_vote.php" class="block px-3 py-2.5 rounded bg-indigo-50 text-indigo-700 font-semibold">Hasil Voting</a>
-            <a href="audit_log.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Audit Log</a>
-        </nav>
-        <div class="p-4 border-t"><a href="logout.php" class="text-red-600 text-sm font-medium hover:underline">Logout</a></div>
-    </aside>
-    <main class="flex-1 p-8 overflow-y-auto">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800">Hasil Quick Count</h1>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h2 class="text-lg font-bold text-amber-600 mb-6 flex items-center gap-2">👑 Perolehan Kahim</h2>
-                <div class="space-y-6">
-                    <?php foreach($kahim_res as $k): $pct = round(($k['total'] / $total_kahim) * 100); ?>
-                    <div>
-                        <div class="flex justify-between text-sm mb-2 font-medium">
-                            <span class="text-gray-700">No. <?= $k['nomor_urut'] ?> - <?= $k['nama'] ?></span>
-                            <span class="text-gray-900 font-bold"><?= $k['total'] ?> Suara (<?= $pct ?>%)</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                            <div class="bg-gradient-to-r from-amber-400 to-amber-500 h-4 rounded-full transition-all duration-1000" style="width: <?= $pct ?>%"></div>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h2 class="text-lg font-bold text-indigo-600 mb-6 flex items-center gap-2">🎓 Perolehan Senator</h2>
-                <div class="space-y-6">
-                    <?php foreach($sen_res as $s): $pct = round(($s['total'] / $total_sen) * 100); ?>
-                    <div>
-                        <div class="flex justify-between text-sm mb-2 font-medium">
-                            <span class="text-gray-700">No. <?= $s['nomor_urut'] ?> - <?= $s['nama'] ?></span>
-                            <span class="text-gray-900 font-bold"><?= $s['total'] ?> Suara (<?= $pct ?>%)</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                            <div class="bg-gradient-to-r from-indigo-400 to-indigo-600 h-4 rounded-full transition-all duration-1000" style="width: <?= $pct ?>%"></div>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
+$page_title = 'Hasil suara'; $page_sub = 'Perolehan suara sementara (quick count).'; $active = 'result_vote.php';
+require '../includes/admin_top.php';
+
+$panels = [
+    ['Ketua Himpunan (Kahim)', 'crown', 'text-amber-600', 'from-amber-400 to-amber-500', $kahim_res, $total_kahim],
+    ['Senator', 'graduation-cap', 'text-brand-600', 'from-brand-500 to-sky-400', $sen_res, $total_sen],
+];
+?>
+<div class="grid gap-6 lg:grid-cols-2">
+<?php foreach ($panels as [$label, $icon, $color, $grad, $rows, $sum]): ?>
+    <section class="rounded-2xl border border-slate-200 bg-white p-6">
+        <h2 class="mb-6 flex items-center gap-2 text-lg font-bold <?= $color ?>"><i data-lucide="<?= $icon ?>" class="h-5 w-5"></i><?= $label ?></h2>
+        <div class="space-y-6">
+            <?php foreach ($rows as $i => $k): $pct = round(($k['total'] / $sum) * 100); ?>
+            <div>
+                <div class="mb-2 flex items-baseline justify-between gap-3 text-sm">
+                    <span class="font-semibold text-slate-700">
+                        No. <?= e($k['nomor_urut']) ?> · <?= e($k['nama']) ?>
+                        <?php if ($i === 0 && $k['total'] > 0): ?><span class="ml-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700">Unggul</span><?php endif; ?>
+                    </span>
+                    <span class="shrink-0 font-bold text-ink"><?= (int)$k['total'] ?> suara <span class="font-medium text-slate-400">(<?= $pct ?>%)</span></span>
+                </div>
+                <div class="h-3 overflow-hidden rounded-full bg-slate-100">
+                    <div class="bar-fill h-full rounded-full bg-gradient-to-r <?= $grad ?>" style="width: <?= $pct ?>%"></div>
                 </div>
             </div>
+            <?php endforeach; ?>
+            <?php if (!$rows): ?><p class="text-sm text-slate-500">Belum ada kandidat.</p><?php endif; ?>
         </div>
-    </main>
-</body>
-</html>
+    </section>
+<?php endforeach; ?>
+</div>
+<?php require '../includes/admin_bottom.php'; ?>

@@ -3,60 +3,35 @@ require '../config.php';
 require_login('admin');
 $kahim = $pdo->query("SELECT * FROM candidates WHERE election_id = 1")->fetchAll();
 $senator = $pdo->query("SELECT * FROM candidates WHERE election_id = 2")->fetchAll();
+
+$page_title = 'Data kandidat'; $page_sub = 'Kandidat yang tampil di surat suara.'; $active = 'candidate.php';
+require '../includes/admin_top.php';
+
+$groups = [
+    ['Ketua Himpunan (Kahim)', 'crown', 'text-amber-600', $kahim],
+    ['Senator', 'graduation-cap', 'text-brand-600', $senator],
+];
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Kandidat - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 flex h-screen overflow-hidden">
-    <aside class="w-64 bg-white border-r flex flex-col">
-        <div class="p-5 border-b text-xl font-bold text-indigo-600">🛡️ Admin Panel</div>
-        <nav class="flex-1 p-3 space-y-1 text-sm">
-            <a href="dashboard.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Overview</a>
-            <a href="voters.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Kelola Pemilih</a>
-            <a href="candidate.php" class="block px-3 py-2.5 rounded bg-indigo-50 text-indigo-700 font-semibold">Kandidat</a>
-            <a href="result_vote.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Hasil Voting</a>
-            <a href="audit_log.php" class="block px-3 py-2.5 rounded hover:bg-gray-100">Audit Log</a>
-        </nav>
-        <div class="p-4 border-t"><a href="logout.php" class="text-red-600 text-sm font-medium hover:underline">Logout</a></div>
-    </aside>
-    <main class="flex-1 p-8 overflow-y-auto">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800">Data Kandidat</h1>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div>
-                <h2 class="font-bold text-lg text-amber-600 mb-4 flex items-center gap-2">👑 Kandidat Kahim</h2>
-                <div class="space-y-4">
-                    <?php foreach($kahim as $k): ?>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex gap-5">
-                        <img src="<?= $k['foto_url'] ?>" class="w-24 h-24 rounded-lg object-cover">
-                        <div>
-                            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">No. <?= $k['nomor_urut'] ?></span>
-                            <p class="font-bold text-lg mt-2 text-gray-800"><?= $k['nama'] ?></p>
-                            <p class="text-sm text-gray-600 mt-1"><b>Visi:</b> <?= $k['visi'] ?></p>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
+<div class="grid gap-10 lg:grid-cols-2">
+<?php foreach ($groups as [$label, $icon, $color, $rows]): ?>
+    <section>
+        <h2 class="mb-4 flex items-center gap-2 text-lg font-bold <?= $color ?>"><i data-lucide="<?= $icon ?>" class="h-5 w-5"></i><?= $label ?></h2>
+        <div class="space-y-4">
+            <?php foreach ($rows as $k): ?>
+            <article class="flex gap-5 rounded-2xl border border-slate-200 bg-white p-5">
+                <div class="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-slate-200">
+                    <img src="<?= e($k['foto_url']) ?>" alt="Foto <?= e($k['nama']) ?>" class="h-full w-full object-cover" onerror="this.style.visibility='hidden'">
                 </div>
-            </div>
-            <div>
-                <h2 class="font-bold text-lg text-indigo-600 mb-4 flex items-center gap-2">🎓 Kandidat Senator</h2>
-                <div class="space-y-4">
-                    <?php foreach($senator as $s): ?>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex gap-5">
-                        <img src="<?= $s['foto_url'] ?>" class="w-24 h-24 rounded-lg object-cover">
-                        <div>
-                            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">No. <?= $s['nomor_urut'] ?></span>
-                            <p class="font-bold text-lg mt-2 text-gray-800"><?= $s['nama'] ?></p>
-                            <p class="text-sm text-gray-600 mt-1"><b>Visi:</b> <?= $s['visi'] ?></p>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
+                <div class="min-w-0">
+                    <span class="rounded-md bg-brand-50 px-2 py-1 text-xs font-bold text-brand-700">No. <?= e($k['nomor_urut']) ?></span>
+                    <h3 class="mt-2 text-lg font-bold text-ink"><?= e($k['nama']) ?></h3>
+                    <p class="mt-1 text-sm leading-relaxed text-slate-600"><span class="font-semibold">Visi:</span> <?= e($k['visi']) ?></p>
                 </div>
-            </div>
+            </article>
+            <?php endforeach; ?>
+            <?php if (!$rows): ?><p class="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">Belum ada kandidat di kategori ini.</p><?php endif; ?>
         </div>
-    </main>
-</body>
-</html>
+    </section>
+<?php endforeach; ?>
+</div>
+<?php require '../includes/admin_bottom.php'; ?>
