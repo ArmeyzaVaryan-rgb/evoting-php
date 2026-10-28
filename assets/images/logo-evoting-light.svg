@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 48" role="img" aria-labelledby="t">
+  <title id="t">E-Voting</title>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#134158"/>
+      <stop offset="1" stop-color="#1D5866"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="12" fill="url(#g)"/>
+  <rect x="13" y="8" width="22" height="28" rx="3" fill="#FFFFFF"/>
+  <path d="M18.5 20.5l4 4 7.5-8.5" fill="none" stroke="#CC9933" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M17.5 30h9" stroke="#134158" stroke-opacity=".28" stroke-width="2" stroke-linecap="round"/>
+  <rect x="8" y="34" width="32" height="5.5" rx="2.75" fill="#CC9933"/>
+  <text x="60" y="31" font-family="'Plus Jakarta Sans','Segoe UI',Arial,sans-serif" font-size="25" font-weight="800" letter-spacing="-0.5" fill="#FFFFFF">E-Voting</text>
+</svg>
