@@ -66,6 +66,18 @@
                 misi.appendChild(note);
             }
             body.appendChild(misi);
+
+            var program = block('list-todo', 'Program Kerja');
+            if (c.program_kerja && c.program_kerja.length) {
+                var ul = el('ul', 'program-list');
+                c.program_kerja.forEach(function (item) { ul.appendChild(el('li', null, item)); });
+                program.appendChild(ul);
+            } else {
+                var programNote = el('p', 'alert alert--info');
+                programNote.textContent = 'Program kerja resmi kandidat ini belum dipublikasikan oleh panitia.';
+                program.appendChild(programNote);
+            }
+            body.appendChild(program);
             body.scrollTop = 0;
             EV.icons();
         }

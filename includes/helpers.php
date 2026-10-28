@@ -42,3 +42,25 @@ if (!function_exists('initial_of')) {
         return function_exists('mb_strtoupper') ? mb_strtoupper($c, 'UTF-8') : strtoupper($c);
     }
 }
+
+if (!function_exists('db_has_column')) {
+    /** Pemeriksaan kolom yang di-cache agar fitur dapat mendeteksi migrasi yang belum dijalankan. */
+    function db_has_column(PDO $pdo, string $table, string $column): bool {
+        static $columnCache = [];
+        $allowedTables = ['users', 'candidates', 'votes', 'audit_logs'];
+        if (!in_array($table, $allowedTables, true)) { return false; }
+        if (!array_key_exists($table, $columnCache)) {
+            $columnCache[$table] = [];
+            try {
+                $stmt = $pdo->query('SHOW COLUMNS FROM `' . $table . '`');
+                foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    if (isset($row['Field'])) { $columnCache[$table][$row['Field']] = true; }
+                }
+            } catch (Throwable $e) {
+                error_log('[e-voting] gagal memeriksa struktur tabel ' . $table . ': ' . $e->getMessage());
+                return false;
+            }
+        }
+        return isset($columnCache[$table][$column]);
+    }
+}

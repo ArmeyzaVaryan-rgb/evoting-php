@@ -57,7 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user && ($user['role'] ?? '') === 'admin') {
             $error = 'Administrator harus masuk menggunakan Gmail yang sudah didaftarkan panitia.';
         } elseif ($user && ($user['role'] ?? '') === 'voter' && password_verify($password, (string)$user['password'])) {
-            if (!(int)$user['is_active']) {
+            if (!empty($user['deleted_at'])) {
+                $error = 'Akun Anda sudah diarsipkan. Hubungi panitia jika perlu dipulihkan.';
+            } elseif (!(int)$user['is_active']) {
                 $error = 'Akun Anda belum diaktifkan oleh panitia.';
             } else {
                 session_regenerate_id(true);
@@ -90,8 +92,8 @@ require __DIR__ . '/includes/site_header.php';
 ?>
 <main id="konten" class="auth">
     <section class="auth__aside" aria-label="Tentang pemilihan">
-        <div class="reveal">
-            <h2>Satu suara,<br>satu mahasiswa.</h2>
+        <div class="auth__intro reveal">
+            <h2>Satu <span class="auth__gold">suara</span>,<br>satu <span class="auth__gold">mahasiswa</span>.</h2>
             <p>Pilih Ketua Himpunan dan Senator dari mana saja. Setiap akun hanya dapat memberikan suara satu kali.</p>
         </div>
         <ul class="auth__list">

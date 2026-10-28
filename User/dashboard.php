@@ -5,13 +5,23 @@ require_login('voter');
 
 class AlreadyVotedException extends RuntimeException {}
 
-$user_id = $_SESSION['user_id'];
-$stmt = $pdo->prepare("SELECT has_voted FROM users WHERE id = ?");
+$user_id = (int)$_SESSION['user_id'];
+$userColumns = ['has_voted'];
+if (db_has_column($pdo, 'users', 'is_active')) { $userColumns[] = 'is_active'; }
+if (db_has_column($pdo, 'users', 'deleted_at')) { $userColumns[] = 'deleted_at'; }
+$stmt = $pdo->prepare("SELECT " . implode(', ', $userColumns) . " FROM users WHERE id = ? AND role = 'voter' LIMIT 1");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch();
+if (!$user || (array_key_exists('is_active', $user) && (int)$user['is_active'] !== 1) || !empty($user['deleted_at'])) {
+    $_SESSION = [];
+    if (session_status() === PHP_SESSION_ACTIVE) { session_regenerate_id(true); }
+    header('Location: ../login.php', true, 303);
+    exit;
+}
 
-$kahim = $pdo->query("SELECT * FROM candidates WHERE election_id = 1 ORDER BY nomor_urut ASC")->fetchAll();
-$senator = $pdo->query("SELECT * FROM candidates WHERE election_id = 2 ORDER BY nomor_urut ASC")->fetchAll();
+$candidateActiveFilter = db_has_column($pdo, 'candidates', 'is_active') ? ' AND is_active = 1' : '';
+$kahim = $pdo->query('SELECT * FROM candidates WHERE election_id = 1' . $candidateActiveFilter . ' ORDER BY nomor_urut ASC')->fetchAll();
+$senator = $pdo->query('SELECT * FROM candidates WHERE election_id = 2' . $candidateActiveFilter . ' ORDER BY nomor_urut ASC')->fetchAll();
 
 $wants_json = (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'fetch') || strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false;
 $error_msg = '';
@@ -32,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_vote'])) {
             $error_msg = "Pilih Kahim dan Senator terlebih dahulu!"; $status = 422; $code = 'incomplete';
         } else {
             // Pastikan kandidat benar-benar milik pemilihan yang bersangkutan.
-            $cek = $pdo->prepare("SELECT COUNT(*) FROM candidates WHERE id = ? AND election_id = ?");
+            $cek = $pdo->prepare('SELECT COUNT(*) FROM candidates WHERE id = ? AND election_id = ?' . $candidateActiveFilter);
             $cek->execute([$kahim_id, 1]);  $ok_k = (int)$cek->fetchColumn() === 1;
             $cek->execute([$senator_id, 2]); $ok_s = (int)$cek->fetchColumn() === 1;
 
@@ -87,10 +97,16 @@ function candidate_payload(array $k, string $label): array {
     if ($status === 'approved' && trim((string)($k['misi'] ?? '')) !== '') {
         $misi = array_values(array_filter(array_map('trim', preg_split('/\R/u', (string)$k['misi']))));
     }
+    $programStatus = (string)($k['program_kerja_status'] ?? 'none');
+    $program = null;
+    if ($programStatus === 'approved' && trim((string)($k['program_kerja'] ?? '')) !== '') {
+        $program = array_values(array_filter(array_map('trim', preg_split('/\R/u', (string)$k['program_kerja']))));
+    }
     return [
         'id' => (int)$k['id'], 'kategori' => $label, 'nomor' => (string)$k['nomor_urut'],
         'nama' => (string)$k['nama'], 'foto' => (string)$k['foto_url'], 'visi' => (string)$k['visi'],
         'misi' => $misi, 'misi_status' => $status,
+        'program_kerja' => $program, 'program_kerja_status' => $programStatus,
     ];
 }
 

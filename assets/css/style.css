@@ -553,3 +553,172 @@ body.has-vote-bar .page { padding-bottom: 130px; }
 .section-title { display: flex; align-items: center; gap: 10px; margin-bottom: var(--s-4); }
 .section-title .icon { color: var(--gold-700); }
 @media (max-width: 520px) { .cand-admin__top { flex-direction: column; } }
+
+/* 20. Revisi 4: penyeimbangan navbar/footer dan login ----------------------------- */
+.site-header__bar.container,
+.site-footer__inner.container {
+    /* Navbar dan footer memakai hampir seluruh lebar layar, tetapi tetap punya ruang aman di tepi. */
+    width: min(1720px, calc(100% - clamp(40px, 5vw, 96px)));
+}
+.site-footer__inner > :last-child { margin-left: auto; text-align: right; }
+
+.auth__intro {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: clamp(18px, 4vh, 54px);
+}
+.auth__aside h2 {
+    font-size: clamp(2.6rem, 1.8rem + 2.6vw, 3.65rem);
+    line-height: 1.08;
+    max-width: 14ch;
+    letter-spacing: -.045em;
+    text-wrap: balance;
+}
+.auth__aside .auth__intro p {
+    margin-top: clamp(14px, 2vh, 22px);
+    max-width: 40ch;
+    font-size: clamp(.94rem, .86rem + .2vw, 1.04rem);
+    line-height: 1.65;
+}
+.auth__gold {
+    color: #F2D27A;
+    background-image: linear-gradient(112deg,
+        #FFF4C8 0%, #EBC65D 18%, #CC9933 34%, #FFF0A8 47%,
+        #B77B16 61%, #E8C45F 76%, #FFF6D4 91%, #CC9933 100%);
+    background-size: 220% 100%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 1px 0 rgba(255, 220, 130, .08));
+    animation: auth-gold-shimmer 6s ease-in-out infinite alternate;
+}
+@keyframes auth-gold-shimmer {
+    from { background-position: 0% 50%; }
+    to { background-position: 100% 50%; }
+}
+
+/* 21. Revisi 4: formulir dan tabel pengelolaan admin ------------------------------ */
+.voter-add-card,
+.voter-filter-card,
+.candidate-add-card { min-width: 0; }
+.voter-form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    gap: var(--s-4);
+    align-items: end;
+}
+.voter-form .field,
+.voter-filters .field,
+.candidate-form .field { min-width: 0; }
+.voter-form__submit,
+.voter-filters__submit,
+.candidate-form__submit {
+    display: flex;
+    gap: var(--s-2);
+    align-items: end;
+    flex-wrap: wrap;
+}
+.voter-filters {
+    display: grid;
+    grid-template-columns: minmax(190px, .8fr) minmax(220px, 1fr) auto;
+    gap: var(--s-4);
+    align-items: end;
+}
+.voter-edit { position: relative; }
+.voter-edit > summary { list-style: none; cursor: pointer; display: inline-flex; }
+.voter-edit > summary::-webkit-details-marker { display: none; }
+.voter-edit[open] { position: relative; }
+.voter-edit__form {
+    position: absolute;
+    z-index: 30;
+    right: 0;
+    top: calc(100% + 8px);
+    width: min(340px, calc(100vw - 40px));
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-4);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    background: #fff;
+    box-shadow: var(--shadow-lg);
+    text-align: left;
+}
+.voter-edit__form .label { margin-bottom: 4px; }
+.candidate-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4);
+    align-items: start;
+}
+.candidate-form__wide,
+.candidate-form__submit { grid-column: 1 / -1; }
+.candidate-form__submit { margin-top: var(--s-1); }
+.candidate-admin-grid > section { min-width: 0; }
+.cand-admin__summary { min-width: 0; flex: 1; }
+.cand-admin__badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.cand-admin__actions { display: flex; justify-content: flex-end; padding: 0 var(--s-5) var(--s-4); }
+.cand-admin--archived { border-color: var(--line); background: linear-gradient(180deg, #F5F7F8, #FFFFFF); }
+.cand-admin--archived .cand-admin__top { opacity: .78; }
+.candidate-edit-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.candidate-edit-form .candidate-form__submit { grid-column: 1 / -1; }
+.mission-list { list-style: decimal; padding-left: 1.35rem; }
+.mission-list li { padding-left: 3px; margin-top: 6px; }
+.program-list { list-style: disc; padding-left: 1.35rem; }
+.program-list li { padding-left: 3px; margin-top: 6px; }
+
+@media (max-width: 900px) {
+    .site-header__bar.container,
+    .site-footer__inner.container { width: calc(100% - 2 * var(--s-4)); }
+    .voter-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .voter-form__submit { grid-column: 1 / -1; }
+    .voter-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .voter-filters__submit { grid-column: 1 / -1; }
+}
+@media (max-width: 760px) {
+    .auth { grid-template-columns: minmax(0, 1fr); }
+    .auth__aside {
+        display: flex;
+        min-height: 0;
+        gap: var(--s-3);
+        padding: var(--s-5) var(--s-4) var(--s-5);
+    }
+    .auth__intro { flex: none; padding-block: var(--s-3); }
+    .auth__aside h2 { font-size: clamp(2.15rem, 7.2vw, 3rem); max-width: 16ch; }
+    .auth__aside .auth__intro p { margin-top: var(--s-3); }
+    .auth__list { grid-template-columns: minmax(0, 1fr); gap: 8px; font-size: .82rem; }
+    .auth__main { min-height: 480px; padding: var(--s-6) var(--s-4); }
+    .site-footer__inner > :last-child { margin-left: 0; text-align: left; width: 100%; }
+    .candidate-admin-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+    .voter-form,
+    .voter-filters,
+    .candidate-form,
+    .candidate-edit-form { grid-template-columns: minmax(0, 1fr); }
+    .voter-form__submit,
+    .voter-filters__submit,
+    .candidate-form__wide,
+    .candidate-form__submit,
+    .candidate-edit-form .candidate-form__submit { grid-column: 1; }
+    .voter-edit__form { position: fixed; top: 50%; left: 50%; right: auto; transform: translate(-50%, -50%); width: min(340px, calc(100vw - 32px)); }
+    .cand-admin__actions { justify-content: flex-start; }
+    .site-footer__inner { gap: var(--s-3); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .auth__gold { animation: none; background-position: 50% 50%; }
+}
+@supports not (-webkit-background-clip: text) {
+    .auth__gold {
+        background: none;
+        color: #F2D27A;
+        -webkit-text-fill-color: currentColor;
+        animation: none;
+        filter: none;
+    }
+}

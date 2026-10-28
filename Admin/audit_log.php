@@ -57,7 +57,9 @@ function audit_qs(array $filters, array $extra = [], array $drop = []): string {
 
 $badge = [
     'LOGIN' => 'badge--ok', 'LOGOUT' => 'badge--muted', 'VOTE_CAST' => 'badge--navy',
-    'RESET_VOTE' => 'badge--danger', 'TOGGLE_ACTIVE' => 'badge--gold', 'EDIT_CANDIDATE' => 'badge--gold',
+    'RESET_VOTE' => 'badge--danger', 'TOGGLE_ACTIVE' => 'badge--gold',
+    'ADD_VOTER' => 'badge--ok', 'EDIT_VOTER' => 'badge--gold', 'ARCHIVE_VOTER' => 'badge--danger', 'RESTORE_VOTER' => 'badge--ok',
+    'ADD_CANDIDATE' => 'badge--ok', 'EDIT_CANDIDATE' => 'badge--gold', 'ARCHIVE_CANDIDATE' => 'badge--danger', 'RESTORE_CANDIDATE' => 'badge--ok',
 ];
 
 function render_results() {

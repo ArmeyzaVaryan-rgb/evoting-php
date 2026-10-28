@@ -3,9 +3,10 @@ require '../config.php';
 require_once '../includes/helpers.php';
 require_login('admin');
 
-$total_voters = $pdo->query("SELECT COUNT(*) FROM users WHERE role='voter'")->fetchColumn();
-$active_voters = $pdo->query("SELECT COUNT(*) FROM users WHERE role='voter' AND is_active=1")->fetchColumn();
-$voted = $pdo->query("SELECT COUNT(*) FROM users WHERE role='voter' AND has_voted=1")->fetchColumn();
+$deletedFilter = db_has_column($pdo, 'users', 'deleted_at') ? ' AND deleted_at IS NULL' : '';
+$total_voters = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role='voter'" . $deletedFilter)->fetchColumn();
+$active_voters = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role='voter' AND is_active=1" . $deletedFilter)->fetchColumn();
+$voted = (int)$pdo->query("SELECT COUNT(*) FROM users u WHERE u.role='voter' AND u.is_active=1" . ($deletedFilter !== '' ? ' AND u.deleted_at IS NULL' : '') . ' AND EXISTS (SELECT 1 FROM votes v WHERE v.voter_id = u.id)')->fetchColumn();
 $not_voted = $active_voters - $voted;
 $progress = $active_voters > 0 ? round(($voted / $active_voters) * 100) : 0;
 
