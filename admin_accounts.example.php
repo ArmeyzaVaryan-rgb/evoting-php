@@ -27,11 +27,16 @@ return [
     'diahayupuspitasastra@gmail.com' => [
         'user_nim' => 'admin',
         'name' => 'Administrator Satu',
-        'password_hash' => '$2y$10$OlOpN82Sor/t/T6faNMfyuVQ5os.GtLzwSBanH6q3PaJKlCA.6mdG', #GantiPasswordKuat123!
+        'password_hash' => '$2y$10$zVPOuJifmxjEhj/ngil1S.HH4gg6FGoN19XCroNI2IttOwJCccPoq', #diah123
     ],
     'deafeb1902@gmail.com' => [
-        'user_nim' => 'admin2',
+        'user_nim' => 'admin',
         'name' => 'Administrator Dua',
-        'password_hash' => '$2y$10$JPQaKVTScrVkzdq0lXdyeuojr4NeLPy.QV8eZBN7p49CcuoVIU4fK', #Deafeb123
+        'password_hash' => '$2y$10$a4PjPqeRectv.lYJrG2mZel6hgQglOt0armNmfXlX6T9GEx5LzqHe', #dea123
+    ],
+    'bebek123@gmail.com' => [
+        'user_nim' => 'admin',
+        'name' => 'Administrator Tiga',
+        'password_hash' => '$2y$10$Y0eii0TXN60S98Z7gz32Ru1dvbkAANfwIerN7Q1FudZrVBSo234yC', #bebek123
     ],
 ];
