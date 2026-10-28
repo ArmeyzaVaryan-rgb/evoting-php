@@ -20,7 +20,8 @@ $page_scripts = $page_scripts ?? [];
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= $base ?>assets/css/style.css">
+    <?php $stylePath = __DIR__ . '/../assets/css/style.css'; $styleVersion = is_file($stylePath) ? (string)filemtime($stylePath) . '-' . (string)filesize($stylePath) : '1'; ?>
+    <link rel="stylesheet" href="<?= $base ?>assets/css/style.css?v=<?= e($styleVersion) ?>">
 
     <!-- Library (dimuat sekali, terpusat) -->
     <script defer src="https://unpkg.com/lucide@0.453.0"></script>

@@ -90,6 +90,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_vote'])) {
 
 if (!empty($_SESSION['vote_flash'])) { $show_success = true; unset($_SESSION['vote_flash']); }
 
+/* Samakan resolusi foto kandidat yang disimpan sebagai path relatif.
+   Path dari folder proyek (mis. assets/images/x.jpg) perlu naik satu tingkat dari /User/. */
+function voter_candidate_photo(string $photo): string {
+    $photo = trim($photo);
+    if ($photo === '') { return ''; }
+    if (preg_match('~^(?:https?:)?//~i', $photo) || str_starts_with($photo, '/')) { return $photo; }
+    if (str_starts_with($photo, 'assets/') || str_starts_with($photo, 'uploads/')) { return '../' . $photo; }
+    return $photo;
+}
+
 /* Data untuk panel detail. Misi hanya tampil bila sudah disetujui panitia. */
 function candidate_payload(array $k, string $label): array {
     $status = $k['misi_status'] ?? 'none';
@@ -104,7 +114,7 @@ function candidate_payload(array $k, string $label): array {
     }
     return [
         'id' => (int)$k['id'], 'kategori' => $label, 'nomor' => (string)$k['nomor_urut'],
-        'nama' => (string)$k['nama'], 'foto' => (string)$k['foto_url'], 'visi' => (string)$k['visi'],
+        'nama' => (string)$k['nama'], 'foto' => voter_candidate_photo((string)($k['foto_url'] ?? '')), 'visi' => (string)$k['visi'],
         'misi' => $misi, 'misi_status' => $status,
         'program_kerja' => $program, 'program_kerja_status' => $programStatus,
     ];
@@ -175,10 +185,10 @@ require '../includes/site_header.php';
             </div>
             <div class="grid grid--2" data-stagger>
                 <?php foreach ($rows as $k): $id = (int)$k['id']; ?>
-                <div class="candidate" data-candidate>
+                <div class="candidate candidate--ballot" data-candidate>
                     <input class="candidate__input" type="radio" name="<?= e($field) ?>" id="cand-<?= $id ?>" value="<?= $id ?>" data-nama="<?= e($k['nama']) ?>" data-nomor="<?= e($k['nomor_urut']) ?>" required>
                     <label class="candidate__body" for="cand-<?= $id ?>">
-                        <span class="avatar"><span aria-hidden="true"><?= e(initial_of($k['nama'])) ?></span><img src="<?= e($k['foto_url']) ?>" alt="Foto <?= e($k['nama']) ?>" loading="lazy" data-fallback></span>
+                        <span class="avatar"><span aria-hidden="true"><?= e(initial_of($k['nama'])) ?></span><?php $candidatePhoto = voter_candidate_photo((string)($k['foto_url'] ?? '')); if ($candidatePhoto !== ''): ?><img src="<?= e($candidatePhoto) ?>" alt="Foto <?= e($k['nama']) ?>" loading="lazy" data-fallback><?php endif; ?></span>
                         <span class="candidate__main">
                             <span class="number-tag">No. <?= e($k['nomor_urut']) ?></span>
                             <span class="candidate__name"><?= e($k['nama']) ?></span>

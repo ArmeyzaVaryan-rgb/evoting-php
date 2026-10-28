@@ -61,9 +61,7 @@
                 c.misi.forEach(function (m) { ol.appendChild(el('li', null, m)); });
                 misi.appendChild(ol);
             } else {
-                var note = el('p', 'alert alert--info');
-                note.textContent = 'Misi resmi kandidat ini belum dipublikasikan oleh panitia.';
-                misi.appendChild(note);
+                misi.appendChild(el('p', null, 'Misi resmi kandidat ini belum dipublikasikan oleh panitia.'));
             }
             body.appendChild(misi);
 
@@ -73,9 +71,7 @@
                 c.program_kerja.forEach(function (item) { ul.appendChild(el('li', null, item)); });
                 program.appendChild(ul);
             } else {
-                var programNote = el('p', 'alert alert--info');
-                programNote.textContent = 'Program kerja resmi kandidat ini belum dipublikasikan oleh panitia.';
-                program.appendChild(programNote);
+                program.appendChild(el('p', null, 'Program kerja resmi kandidat ini belum dipublikasikan oleh panitia.'));
             }
             body.appendChild(program);
             body.scrollTop = 0;

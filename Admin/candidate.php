@@ -190,8 +190,9 @@ $status_badge = [
 <div class="alert alert--gold mb-5" role="note"><i data-lucide="database" class="icon" aria-hidden="true"></i><span class="alert__body"><b>Struktur database Revisi 4 belum lengkap.</b> Jalankan <code>database/migration_revisi4.sql</code> pada database <code>evoting</code>. Migrasi memeriksa kolom yang sudah ada sebelum menambah kolom baru, serta tidak menghapus data lama.</span></div>
 <?php endif; ?>
 
-<section class="card mb-5 candidate-add-card">
-    <h2 class="section-title"><i data-lucide="user-round-plus" class="icon icon--lg" aria-hidden="true"></i>Tambah kandidat</h2>
+<details class="card mb-5 candidate-add-disclosure">
+    <summary class="candidate-add-disclosure__summary"><span class="candidate-add-disclosure__title"><i data-lucide="user-round-plus" class="icon icon--lg" aria-hidden="true"></i>Tambah kandidat</span><span class="candidate-add-disclosure__hint">Klik untuk membuka formulir di halaman ini</span><i data-lucide="chevron-down" class="icon candidate-add-disclosure__chevron" aria-hidden="true"></i></summary>
+    <div class="candidate-add-card">
     <p class="muted mb-4">Data kandidat disimpan ke SQL. Misi dan program kerja baru terlihat oleh pemilih jika statusnya disetujui.</p>
     <form method="post" class="candidate-form" autocomplete="off">
         <?= csrf_field() ?><input type="hidden" name="action" value="add">
@@ -204,9 +205,10 @@ $status_badge = [
         <div class="field"><label for="new-misi-status" class="label">Status misi</label><select class="select" id="new-misi-status" name="misi_status"><option value="draft" selected>Draf (belum tampil)</option><option value="approved">Disetujui (tampil)</option><option value="none">Belum diisi</option></select></div>
         <div class="field"><label for="new-program" class="label">Program kerja (satu poin per baris)</label><textarea class="textarea" id="new-program" name="program_kerja" maxlength="5000" placeholder="Satu program kerja per baris"></textarea></div>
         <div class="field"><label for="new-program-status" class="label">Status program kerja</label><select class="select" id="new-program-status" name="program_kerja_status"><option value="draft" selected>Draf (belum tampil)</option><option value="approved">Disetujui (tampil)</option><option value="none">Belum diisi</option></select></div>
-        <div class="candidate-form__submit"><button type="submit" class="btn btn--primary"><i data-lucide="plus" class="icon" aria-hidden="true"></i>Tambah kandidat</button></div>
+        <div class="candidate-form__submit"><button type="submit" class="btn btn--primary"><i data-lucide="plus" class="icon" aria-hidden="true"></i>Simpan kandidat</button></div>
     </form>
-</section>
+    </div>
+</details>
 
 <div class="grid grid--2 candidate-admin-grid" style="align-items:start">
 <?php foreach ($groups as [$label, $icon, $rows, $categoryId]): ?>
