@@ -7,7 +7,11 @@ $userId = $_SESSION['user_id'] ?? null;
 $role = (string)($_SESSION['role'] ?? 'user');
 if ($userId !== null) {
     try {
-        log_activity($pdo, $userId, 'LOGOUT', ucfirst($role) . ' logout');
+        $actorEmail = trim((string)($_SESSION['email'] ?? ''));
+        $description = ($role === 'admin' && $actorEmail !== '')
+            ? 'Administrator logout: ' . $actorEmail
+            : ucfirst($role) . ' logout';
+        log_activity($pdo, $userId, 'LOGOUT', $description);
     } catch (Throwable $e) {
         error_log('[e-voting] gagal mencatat aktivitas logout: ' . $e->getMessage());
     }
@@ -32,5 +36,5 @@ if (ini_get('session.use_cookies')) {
 session_destroy();
 
 // Gunakan base URL aplikasi, bukan path yang diasumsikan seperti /evoting/.
-header('Location: ' . APP_BASE_URL . 'login.php', true, 303);
+header('Location: ' . APP_BASE_URL . 'index.php', true, 303);
 exit;

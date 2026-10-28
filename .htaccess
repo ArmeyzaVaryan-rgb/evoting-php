@@ -1,0 +1,4 @@
+# Jangan izinkan browser meminta file konfigurasi akun admin secara langsung.
+<Files "admin_accounts.php">
+    Require all denied
+</Files>

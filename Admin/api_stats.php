@@ -3,7 +3,7 @@
 require '../config.php';
 require_once '../includes/helpers.php';
 
-if (($_SESSION['role'] ?? '') !== 'admin' || empty($_SESSION['user_id'])) {
+if (($_SESSION['role'] ?? '') !== 'admin' || empty($_SESSION['user_id']) || !admin_session_is_allowed()) {
     json_out(['ok' => false, 'message' => 'Tidak diizinkan.'], 403);
 }
 

@@ -12,14 +12,12 @@ require 'includes/site_header.php';
             <p class="hero__lead">Pemilihan Ketua Himpunan dan Senator berlangsung secara daring. Masuk dengan akun dari panitia, pilih kandidatmu, dan suaramu langsung tercatat.</p>
 
             <?php if ($login): ?>
-                <p class="hero__note"><i data-lucide="circle-check" class="icon" aria-hidden="true"></i>Masuk sebagai <b><?= e($_SESSION['nama']) ?></b> (<?= e($_SESSION['role']) ?>)</p>
                 <div class="hero__cta">
-                    <?php if ($_SESSION['role'] == 'admin'): ?>
+                    <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>
                         <a href="Admin/dashboard.php" class="btn btn--primary"><i data-lucide="layout-dashboard" class="icon" aria-hidden="true"></i>Buka panel admin</a>
                     <?php else: ?>
                         <a href="User/dashboard.php" class="btn btn--primary"><i data-lucide="vote" class="icon" aria-hidden="true"></i>Buka surat suara</a>
                     <?php endif; ?>
-                    <a href="logout.php" class="btn btn--logout btn--logout-hero" data-confirm="Sesi Anda akan diakhiri dan Anda perlu masuk kembali." data-confirm-title="Keluar dari E-Voting?" data-confirm-ok="Ya, keluar"><i data-lucide="log-out" class="icon" aria-hidden="true"></i>Keluar</a>
                 </div>
             <?php else: ?>
                 <div class="hero__cta">

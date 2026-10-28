@@ -1,0 +1,51 @@
+PANDUAN KONFIGURASI LOGIN ADMIN E-VOTING
+========================================
+
+Login admin sekarang menggunakan alamat Gmail yang masuk daftar izin (allowlist) dan password yang diverifikasi dengan password hash. Admin tidak bisa masuk memakai username/NIM admin di form peserta.
+
+PENTING: admin_accounts.php sengaja dikirim tanpa akun aktif karena alamat Gmail dan password admin belum diberikan. Tambahkan akun resmi milik panitia sebelum mencoba login admin.
+
+LANGKAH 1 — Pastikan baris admin di database
+--------------------------------------------
+Buka phpMyAdmin > database evoting > tabel users. Pastikan minimal ada satu baris admin dengan kolom role bernilai 'admin'. Catat nilai kolom nim baris tersebut. Misalnya, bila baris admin yang sudah ada menggunakan nim 'admin', gunakan nilai itu pada user_nim. Beberapa Gmail boleh dipetakan ke baris admin yang sama agar tidak perlu mengubah skema database; untuk audit trail dengan identitas database yang berbeda, buat satu baris admin per orang dan petakan tiap email ke nim yang berbeda. Deskripsi audit login/logout juga menyertakan email admin yang digunakan.
+
+LANGKAH 2 — Buat password hash
+------------------------------
+Buka PowerShell, lalu jalankan perintah berikut dengan password baru milik admin:
+
+C:\xampp\php\php.exe -r "echo password_hash('GantiPasswordKuat123!', PASSWORD_DEFAULT), PHP_EOL;"
+
+Ganti GantiPasswordKuat123! dengan password kuat pilihan sendiri sebelum menjalankan perintah. Salin seluruh hash yang tercetak. Jangan memasukkan password teks biasa ke admin_accounts.php.
+
+LANGKAH 3 — Daftarkan Gmail yang diizinkan
+------------------------------------------
+Buka file admin_accounts.php di folder utama evoting-php. Ubah return array di bagian bawah dengan format berikut. Ganti email, nama, NIM admin, dan hash dengan nilai yang benar:
+
+return [
+    'admin.satu@gmail.com' => [
+        'user_nim' => 'admin',
+        'name' => 'Administrator Satu',
+        'password_hash' => '$2y$10$TEMPELKAN_HASH_VALID_DI_SINI',
+    ],
+    'admin.dua@gmail.com' => [
+        'user_nim' => 'nim-admin-kedua',
+        'name' => 'Administrator Dua',
+        'password_hash' => '$2y$10$TEMPELKAN_HASH_VALID_DI_SINI',
+    ],
+];
+
+Contoh di atas hanya menunjukkan struktur, bukan akun yang bisa digunakan. Hapus contoh yang tidak diperlukan. Setiap email harus berakhiran @gmail.com dan menjadi key pada array. Setiap user_nim harus cocok dengan users.nim dari baris yang role-nya 'admin'. Jangan memakai placeholder hash; login tidak akan berhasil sampai hash diganti dengan hasil password_hash yang valid.
+
+LANGKAH 4 — Cara login
+----------------------
+- Admin: masukkan Gmail yang didaftarkan dan password yang sesuai dengan hash.
+- Peserta: tetap masukkan NIM serta password yang disediakan panitia.
+- Gmail yang tidak masuk daftar tidak bisa digunakan untuk login admin.
+- Admin lama yang mencoba masuk memakai NIM akan diminta memakai Gmail allowlist.
+
+KEAMANAN
+--------
+- Jangan commit atau membagikan admin_accounts.php yang sudah berisi daftar akun/hash. File ini sudah ditambahkan ke .gitignore.
+- Jangan gunakan password contoh dari panduan.
+- Setelah logout, aplikasi kembali ke halaman beranda dan session dihapus oleh handler logout terpusat.
+- Pastikan konfigurasi database dan baris admin di database sesuai sebelum pengujian.
