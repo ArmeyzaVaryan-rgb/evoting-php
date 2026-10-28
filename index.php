@@ -3,30 +3,55 @@ $title = 'E-Voting Kampus'; $base = '';
 require 'includes/head.php';
 $login = isset($_SESSION['user_id']);
 ?>
-<body class="flex min-h-screen items-center justify-center bg-ink p-6 font-sans">
-    <div class="w-full max-w-md rounded-3xl bg-white p-10 shadow-2xl">
-        <span class="grid h-12 w-12 place-items-center rounded-2xl bg-brand-600 text-white"><i data-lucide="vote" class="h-6 w-6"></i></span>
-        <h1 class="mt-6 text-3xl font-extrabold tracking-tight text-ink">E-Voting Kampus</h1>
-        <p class="mt-2 text-slate-500">Pemilihan Ketua Himpunan dan Senator.</p>
+<body class="font-sans">
+<a href="#konten" class="skip-link">Lewati ke konten</a>
+<div class="hero surface-deep on-dark">
+    <div class="ring-deco" aria-hidden="true"></div>
+    <div class="ring-deco alt" aria-hidden="true"></div>
 
-        <?php if ($login): ?>
-            <div class="mt-8 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
-                <i data-lucide="circle-check" class="h-4 w-4 shrink-0"></i>
-                <span>Masuk sebagai <b><?= e($_SESSION['nama']) ?></b> (<?= e($_SESSION['role']) ?>)</span>
-            </div>
-            <div class="mt-5 space-y-3">
-                <?php if ($_SESSION['role'] == 'admin'): ?>
-                    <a href="Admin/dashboard.php" class="block rounded-xl bg-brand-600 py-3 text-center text-sm font-bold text-white transition hover:bg-brand-700">Buka panel admin</a>
-                <?php else: ?>
-                    <a href="User/dashboard.php" class="block rounded-xl bg-brand-600 py-3 text-center text-sm font-bold text-white transition hover:bg-brand-700">Buka surat suara</a>
-                <?php endif; ?>
-                <a href="logout.php" class="block rounded-xl bg-slate-100 py-3 text-center text-sm font-bold text-slate-600 transition hover:bg-red-50 hover:text-red-600">Keluar</a>
-            </div>
-        <?php else: ?>
-            <a href="login.php" class="mt-8 block rounded-xl bg-brand-600 py-3 text-center text-sm font-bold text-white shadow-lg shadow-brand-600/20 transition hover:bg-brand-700">Masuk (admin atau pemilih)</a>
-        <?php endif; ?>
-    </div>
-<script src="https://unpkg.com/lucide@0.453.0"></script>
-<script>lucide.createIcons();</script>
+    <header class="relative z-10 mx-auto flex w-full max-w-6xl items-center gap-3 px-6 py-6">
+        <span class="brand-mark"><i data-lucide="vote" class="h-5 w-5"></i></span>
+        <span class="text-lg font-extrabold">E-Voting Kampus</span>
+    </header>
+
+    <main id="konten" class="relative z-10 mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-6 pb-12 lg:grid-cols-2">
+        <section>
+            <span class="eyebrow reveal"><i data-lucide="shield-check" class="h-3.5 w-3.5"></i>Pemilihan Ketua Himpunan dan Senator</span>
+            <h1 class="reveal mt-6 text-5xl font-extrabold leading-[1.08] tracking-tight lg:text-6xl" style="--d:.08s">
+                <span class="gradient-text">Satu suara,</span><br>satu mahasiswa.
+            </h1>
+            <p class="reveal mt-5 max-w-md text-lg" style="--d:.16s;color:#C5D6DE">Pilih dari mana saja. Suaramu tercatat aman dan bersifat rahasia.</p>
+            <ul class="trust-list reveal mt-8" style="--d:.24s">
+                <li><span class="ico"><i data-lucide="lock" class="h-4 w-4"></i></span>Suara dienkripsi dengan bukti hash</li>
+                <li><span class="ico"><i data-lucide="eye-off" class="h-4 w-4"></i></span>Pilihanmu tidak bisa dilihat siapa pun</li>
+                <li><span class="ico"><i data-lucide="scroll-text" class="h-4 w-4"></i></span>Setiap aktivitas tercatat di audit log</li>
+            </ul>
+        </section>
+
+        <section class="reveal card mx-auto w-full max-w-md p-8 sm:p-10" style="--d:.2s;box-shadow:var(--shadow-lg)" aria-label="Akses pemilihan">
+            <?php if ($login): ?>
+                <p class="text-sm font-semibold muted">Selamat datang kembali</p>
+                <p class="mt-1 text-2xl font-extrabold text-ink"><?= e($_SESSION['nama']) ?></p>
+                <p class="mt-2"><span class="badge badge-ok"><i data-lucide="circle-check" class="h-3.5 w-3.5"></i>Masuk sebagai <?= e($_SESSION['role']) ?></span></p>
+                <div class="mt-7 space-y-3">
+                    <?php if ($_SESSION['role'] == 'admin'): ?>
+                        <a href="Admin/dashboard.php" class="btn btn-primary btn-block"><i data-lucide="layout-dashboard" class="h-4 w-4"></i>Buka panel admin</a>
+                    <?php else: ?>
+                        <a href="User/dashboard.php" class="btn btn-primary btn-block"><i data-lucide="vote" class="h-4 w-4"></i>Buka surat suara</a>
+                    <?php endif; ?>
+                    <a href="logout.php" class="btn btn-ghost btn-block">Keluar</a>
+                </div>
+            <?php else: ?>
+                <span class="brand-mark"><i data-lucide="log-in" class="h-5 w-5"></i></span>
+                <h2 class="mt-5 text-2xl font-extrabold text-ink">Mulai memilih</h2>
+                <div class="divider-gold mt-3"></div>
+                <p class="muted mt-3 text-sm">Masuk dengan NIM dan password yang diberikan panitia.</p>
+                <a href="login.php" class="btn btn-primary btn-block mt-7">Masuk (admin atau pemilih)<i data-lucide="arrow-right" class="h-4 w-4"></i></a>
+            <?php endif; ?>
+        </section>
+    </main>
+
+    <footer class="site-footer relative z-10">&copy; <?= date('Y') ?> E-Voting Kampus</footer>
+</div>
 </body>
 </html>
