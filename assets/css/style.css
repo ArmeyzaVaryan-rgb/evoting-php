@@ -616,6 +616,10 @@ body.has-vote-bar .page { padding-bottom: 130px; }
 .voter-form .field,
 .voter-filters .field,
 .candidate-form .field { min-width: 0; }
+/* Grid forms use consistent field tops; avoid the generic stacked-field margin. */
+.voter-form > .field,
+.voter-filters > .field,
+.candidate-form > .field { margin-top: 0; }
 .voter-form__submit,
 .voter-filters__submit,
 .candidate-form__submit {

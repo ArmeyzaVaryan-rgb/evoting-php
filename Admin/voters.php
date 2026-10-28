@@ -222,7 +222,7 @@ require '../includes/admin_top.php';
         <?= csrf_field() ?><input type="hidden" name="action" value="add">
         <div class="field"><label class="label" for="add-nim">NIM</label><input class="input" id="add-nim" name="nim" maxlength="80" required></div>
         <div class="field"><label class="label" for="add-nama">Nama lengkap</label><input class="input" id="add-nama" name="nama" maxlength="150" required></div>
-        <div class="field"><label class="label" for="add-password">Password awal</label><input class="input" id="add-password" name="password" type="password" minlength="8" autocomplete="new-password" required><small class="hint">Minimal 8 karakter.</small></div>
+        <div class="field"><label class="label" for="add-password">Password awal</label><input class="input" id="add-password" name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Minimal 8 karakter" required></div>
         <div class="voter-form__submit"><button class="btn btn--primary" type="submit"><i data-lucide="plus" class="icon" aria-hidden="true"></i>Tambah pemilih</button></div>
     </form>
 </section>
